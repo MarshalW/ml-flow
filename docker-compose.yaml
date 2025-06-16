@@ -1,0 +1,11 @@
+services:
+  ml-flow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ml-flow
+    restart: always
+    init: true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    tty: true
