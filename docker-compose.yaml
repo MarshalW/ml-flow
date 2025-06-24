@@ -9,6 +9,7 @@ services:
     volumes:
       - ./app:/app
       - ./data:/data
+      - ./cache-modelscope:/root/.cache/modelscope
       - /etc/localtime:/etc/localtime:ro
     tty: true
     deploy:
