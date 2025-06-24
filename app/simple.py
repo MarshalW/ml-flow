@@ -76,6 +76,9 @@ model = FastLanguageModel.get_peft_model(
     loftq_config=None,  # 可以配置LoftQ初始化
 )
 
+import wandb
+wandb.login()
+
 trainer = SFTTrainer(
     model=model,
     tokenizer=tokenizer,
@@ -96,7 +99,8 @@ trainer = SFTTrainer(
         weight_decay=0.001,
         lr_scheduler_type="cosine",
         seed=3407,
-        report_to="none",  # Use this for WandB etc
+        # report_to="none",  # Use this for WandB etc
+        report_to="wandb",
         # 新增对齐旧的调用参数
         gradient_checkpointing=True,
         fp16=False,

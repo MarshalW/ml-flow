@@ -12,11 +12,12 @@ services:
       - ./cache-modelscope:/root/.cache/modelscope
       - /etc/localtime:/etc/localtime:ro
     tty: true
+    env_file:
+      - ./.env
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
               count: 1
-              capabilities: [ gpu ]
-
+              capabilities: [gpu]
