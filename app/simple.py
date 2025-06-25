@@ -4,9 +4,10 @@ from unsloth import FastLanguageModel
 import torch
 from datasets import Dataset
 from trl import SFTTrainer, SFTConfig
+import os
 
 dataset_path = "/data/simple.csv"
-model_name = "Qwen/Qwen3-1.7B"
+model_name = os.getenv("DEFAULT_MODEL_NAME", "Qwen/Qwen3-1.7B")
 max_seq_length = 4096
 output_dir = "./output-simple"
 
@@ -76,7 +77,6 @@ model = FastLanguageModel.get_peft_model(
     loftq_config=None,  # 可以配置LoftQ初始化
 )
 
-import os
 os.environ["HTTP_PROXY"] = "http://sing-box-clash:7890"
 os.environ["HTTPS_PROXY"] = "http://sing-box-clash:7890"
 
