@@ -21,3 +21,13 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+  sing-box:
+    build:
+      context: ./sing-box
+      dockerfile: Dockerfile
+    container_name: sing-box-clash
+    env_file:
+      - ./.env
+    ports:
+      - "7890:7890" # HTTP proxy
+    restart: unless-stopped

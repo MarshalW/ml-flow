@@ -76,6 +76,10 @@ model = FastLanguageModel.get_peft_model(
     loftq_config=None,  # 可以配置LoftQ初始化
 )
 
+import os
+os.environ["HTTP_PROXY"] = "http://sing-box-clash:7890"
+os.environ["HTTPS_PROXY"] = "http://sing-box-clash:7890"
+
 import wandb
 wandb.login()
 

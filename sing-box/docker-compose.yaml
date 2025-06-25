@@ -1,0 +1,9 @@
+services:
+  sing-box:
+    build: .
+    container_name: sing-box-clash
+    environment:
+      - CLASH_SUB_URL=https://connect.applecross.link/clash/702400/Qm7pnGtLKLQX
+    ports:
+      - "7890:7890"   # HTTP proxy
+    restart: unless-stopped
