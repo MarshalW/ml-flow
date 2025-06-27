@@ -1,3 +1,4 @@
+import wandb
 import pandas as pd
 from modelscope import snapshot_download
 from unsloth import FastLanguageModel
@@ -5,6 +6,7 @@ import torch
 from datasets import Dataset
 from trl import SFTTrainer, SFTConfig
 import os
+from sklearn.model_selection import train_test_split
 
 dataset_path = "/data/simple.csv"
 model_name = os.getenv("DEFAULT_MODEL_NAME", "Qwen/Qwen3-1.7B")
@@ -60,10 +62,6 @@ def formatting_func_improved(examples):
         texts.append(formatted_text)
     return {"text": texts}
 
-
-dataset = Dataset.from_pandas(pd.DataFrame(dataset))
-dataset = dataset.map(formatting_func_improved, batched=True)
-
 model = FastLanguageModel.get_peft_model(
     model,
     r=16,  # 对于8B模型可以尝试16或32
@@ -80,14 +78,26 @@ model = FastLanguageModel.get_peft_model(
 os.environ["HTTP_PROXY"] = "http://sing-box-clash:7890"
 os.environ["HTTPS_PROXY"] = "http://sing-box-clash:7890"
 
-import wandb
 wandb.login()
+
+# 原始数据切分：转换为 DataFrame 再切分
+df_raw = pd.DataFrame(dataset)
+train_df, eval_df = train_test_split(df_raw, test_size=0.1, random_state=42)
+
+# 再分别转回 HuggingFace Dataset
+train_dataset = Dataset.from_pandas(train_df)
+eval_dataset = Dataset.from_pandas(eval_df)
+
+# 再执行格式化（记得格式化的是 Dataset 类型）
+train_dataset = train_dataset.map(formatting_func_improved, batched=True)
+eval_dataset = eval_dataset.map(formatting_func_improved, batched=True)
+
 
 trainer = SFTTrainer(
     model=model,
     tokenizer=tokenizer,
-    train_dataset=dataset,
-    eval_dataset=None,  # Can set up evaluation!
+    train_dataset=train_dataset,
+    eval_dataset=eval_dataset,
     max_seq_length=max_seq_length,  # 自己加的
     args=SFTConfig(
         dataset_text_field="text",
@@ -109,6 +119,11 @@ trainer = SFTTrainer(
         gradient_checkpointing=True,
         fp16=False,
         bf16=True,
+        # # 定期评估
+        # evaluation_strategy="steps",  # or "epoch"
+        # eval_steps=100,  # 每 100 步评估一次
+        # save_strategy="steps",
+        # save_steps=200,
     ),
 )
 

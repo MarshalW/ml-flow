@@ -1,0 +1,62 @@
+Prompt,Response
+nocobase 是什么语言开发的,"NocoBase 是一个开源的、低代码开发平台，主要用于快速构建数据管理应用。它主要是使用 **JavaScript** 和 **TypeScript** 开发的。
+
+具体技术栈如下：
+
+### 前端部分：
+- **React.js**：用于构建用户界面。
+- **TypeScript**：前端主要使用 TypeScript 编写，提供类型安全。
+- **Ant Design**：UI 组件库，用于构建美观的界面。
+- **Vite / Webpack**：前端构建工具。
+
+### 后端部分：
+- **Node.js**：后端运行环境。
+- **Express.js / Koa.js**：Web 框架（根据项目结构可能有所选择）。
+- **TypeScript**：后端也主要使用 TypeScript 编写。
+- **Sequelize / TypeORM**：用于数据库操作的 ORM 工具。
+- **PostgreSQL / MySQL / SQLite 等**：支持多种数据库。
+
+---
+
+### 总结：
+
+| 部分     | 使用语言/技术             |
+|----------|---------------------------|
+| 前端     | JavaScript + TypeScript + React |
+| 后端     | Node.js + TypeScript      |
+| 数据库   | PostgreSQL / MySQL / SQLite |
+
+如果你对 NocoBase 感兴趣，可以去它的 GitHub 仓库查看源码和文档：  
+👉 [https://github.com/nocobase/nocobase](https://github.com/nocobase/nocobase)
+
+需要我帮你分析某个模块是用什么写的吗？"
+nocobase 支持哪些编程语言和开发框架,"NocoBase 是基于 **Node.js** 开发的，其后端使用了 **Koa** 框架 。这表明它主要支持 JavaScript 作为编程语言，同时也能够利用 Node.js 生态系统中的各种工具和库。
+
+此外，NocoBase 的命令行接口（CLI）工具支持使用 **TypeScript** 进行开发，因为它支持 ts-node 模式，这种模式适用于开发环境并支持实时编译 。
+
+前端方面，NocoBase 使用了 **React** 结合 **Ant Design** 来构建用户界面 ，这意味着开发者可以使用 React 的相关技术栈来进行前端定制化开发。
+
+综上所述，NocoBase 主要支持的编程语言包括：
+- JavaScript
+- TypeScript （通过 CLI 工具）
+
+而支持的开发框架则包括：
+- Node.js + Koa (后端)
+- React + Ant Design (前端)"
+nocobase支持哪些数据库,"NocoBase 支持以下数据库：
+
+- **SQLite** 3.8.8+：适用于轻量级应用和开发测试环境 。
+- **MySQL** 8.0.17+：支持作为主数据库以及外部数据源 。
+- **PostgreSQL** 10.0+：同样支持作为主数据库以及外部数据源 。
+- **MariaDB**：支持作为外部数据源 。
+
+此外，NocoBase 提供了连接远程数据表的功能插件，目前支持 MySQL 和 PostgreSQL 数据库 。对于外部数据源的支持，需要安装特定插件并进行配置 。
+
+总结来看，NocoBase 主要支持的数据库为 SQLite、MySQL、PostgreSQL 和 MariaDB 。"
+是否能基于 javascript 开发 nocobase 应用,是的，可以基于 JavaScript 开发 NocoBase 应用。NocoBase 是一个开源平台，由 JavaScript 编写，基于 NodeJS、TypeScript 和 AntDesign，旨在无需编码即可创建自定义应用程序 。此外，NocoBase 的命令行接口（CLI）工具支持使用 TypeScript 进行开发，因为它支持 ts-node 模式，这种模式适用于开发环境并支持实时编译 。同时，NocoBase 提供了一个基于 Chrome V8 引擎的强大 JavaScript 运行时环境，这使得处理大量并发连接成为可能，具有高吞吐量，非常适合实时应用 。在组件属性中也可以编写 JavaScript 代码，进行更复杂的功能定制和动态数据更新 。
+nocobase支持用java语言开发么,"NocoBase不支持用Java语言开发。
+
+NocoBase是一个开源的无代码/低代码开发平台。它是用TypeScript编写的，基于NodeJS、React和Koa等技术栈。其核心和基础插件都是开源的，主要通过插件扩展功能，适合技术团队将其作为基础设施来提高交付速度和效率。"
+nocobase支持用 go 语言开发么,"NocoBase不支持用Go语言开发。
+
+NocoBase是一个开源的无代码/低代码开发平台，它是用TypeScript编写的，基于NodeJS、React和Koa等技术栈。其功能通过插件扩展，主要面向技术团队，可作为基础设施提高交付速度和效率。"
