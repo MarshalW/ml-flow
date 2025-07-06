@@ -2,3 +2,4 @@
 *.tar
 .env
 /cache-modelscope
+/app/bk
