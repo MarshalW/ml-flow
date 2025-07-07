@@ -1,21 +1,20 @@
 import os
 import torch
 import pandas as pd
-import wandb
 from modelscope import snapshot_download
 from unsloth import FastLanguageModel
-from transformers import TextStreamer
 from tqdm import tqdm
 from datetime import datetime
 from peft import PeftModel
 
-# ✅ 设置环境变量（如果需要代理）
-# os.environ["HTTP_PROXY"] = "http://sing-box-clash:7890"
-# os.environ["HTTPS_PROXY"] = "http://sing-box-clash:7890"
 
 # ✅ 模型和适配器配置
 base_model_name = os.getenv("DEFAULT_MODEL_NAME", "Qwen/Qwen3-1.7B")  # 基座模型名称
-lora_adapter_path = "./output-simple"  # LoRA适配器保存路径
+
+model_info = base_model_name.split('/')[-1]
+lora_adapter_path = f"./output-adapter-{model_info}"
+
+# lora_adapter_path = "./output-simple"  # LoRA适配器保存路径
 max_seq_length = 4096  # 与训练时保持一致
 
 # ✅ 下载基座模型
@@ -37,11 +36,7 @@ model = FastLanguageModel.for_inference(model)  # 优化推理速度
 
 # ✅ 创建时间戳和模型信息
 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-model_info = base_model_name.split('/')[-1]
-
-# ✅ 登录wandb（可选）
-# wandb.login()
-# run = wandb.init(project="lora_nocobase_inference", name=f"inference-{model_info}-{timestamp}")
+# model_info = base_model_name.split('/')[-1]
 
 # ✅ 读取测试集
 test_df = pd.read_csv("/data/nocobase-qa-test.csv")
@@ -95,14 +90,3 @@ output_path = f"/data/test-results-{model_info}-{timestamp}.csv"
 results_df = pd.DataFrame(results)
 results_df.to_csv(output_path, index=False)
 print(f"[INFO] 推理结果已保存至 {output_path}")
-
-# ✅ 上传结果到wandb（可选）
-# results_artifact = wandb.Artifact(
-#     name=f"test_results_{model_info}", 
-#     type="results",
-#     description=f"测试结果 for {model_info} 在 {timestamp}"
-# )
-# results_artifact.add_file(output_path)
-# run.log_artifact(results_artifact)
-# wandb.finish()
-# print("CSV文件已作为工件上传到 Weights & Biases。")
