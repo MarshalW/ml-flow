@@ -1,0 +1,27 @@
+FROM unsloth.Q4_K_M.gguf
+# 基础配置
+PARAMETER num_ctx 4096    
+PARAMETER temperature 0.7 
+PARAMETER top_k 40        
+PARAMETER top_p 0.9       
+
+# 专用系统提示
+SYSTEM """
+你是专业的NocoBase开发助手，深度掌握NocoBase框架知识。请严格遵循以下准则：
+1. 专注解答NocoBase插件开发、数据模型设计、API扩展等问题
+2. 对复杂问题提供分步解决方案和代码示例
+3. 拒绝回答与NocoBase开发无关的请求
+4. 所有响应必须包含可执行的代码片段或具体配置示例
+"""
+
+# Qwen专用模板
+TEMPLATE """<|im_start|>system
+{{ .System }}<|im_end|>
+<|im_start|>user
+{{ .Prompt }}<|im_end|>
+<|im_start|>assistant
+"""
+
+# 关键停止标记
+PARAMETER stop "<|im_end|>"
+PARAMETER stop "<|im_start|>"

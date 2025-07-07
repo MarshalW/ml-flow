@@ -14,6 +14,9 @@ from trl import SFTTrainer
 from tqdm import tqdm
 from datetime import datetime
 import wandb
+import shutil
+
+checkpoints_dir = "./output-checkpoints"
 
 
 # ✅ 数据加载
@@ -102,7 +105,7 @@ print(f"[INFO] Auto eval_steps = {eval_steps}")
 
 # ✅ Trainer 参数
 training_args = TrainingArguments(
-    output_dir="./output-simple",
+    output_dir=checkpoints_dir,
     per_device_train_batch_size=batch_size,
     gradient_accumulation_steps=grad_accum,
     num_train_epochs=num_epochs,
@@ -140,50 +143,57 @@ trainer = SFTTrainer(
 trainer_stats = trainer.train()
 
 # ✅ 保存模型
-output_dir = "./output-simple"
+output_dir = f"./output-adapter-{model_info}"
+if os.path.exists(output_dir):
+    shutil.rmtree(output_dir)
+    
 model.save_pretrained(output_dir)
 tokenizer.save_pretrained(output_dir)
 
-# ✅ 推理
-test_df = pd.read_csv("/data/nocobase-qa-test.csv")
-prompts = test_df["Prompt"].tolist()
+if os.path.exists(checkpoints_dir):
+    shutil.rmtree(checkpoints_dir)
+    print(f"✅ 已删除中间 checkpoint 目录：{checkpoints_dir}")
 
-generation_kwargs = {
-    "max_new_tokens": 1024,
-    "temperature": 0.7,
-    "top_p": 0.9,
-    "do_sample": True,
-    "repetition_penalty": 1.1,
-}
+# # ✅ 推理
+# test_df = pd.read_csv("/data/nocobase-qa-test.csv")
+# prompts = test_df["Prompt"].tolist()
 
-results = []
-for prompt in tqdm(prompts, desc="Generating responses"):
-    messages = [
-        {"role": "system", "content": "你是一个编程助手，需要解决用户提出的技术问题。"},
-        {"role": "user", "content": prompt},
-    ]
-    formatted = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    inputs = tokenizer(formatted, return_tensors="pt").to(model.device)
-    input_ids_len = inputs.input_ids.shape[1]
-    outputs = model.generate(**inputs, **generation_kwargs)
-    generated_tokens = outputs[0][input_ids_len:]
-    response = tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
-    if "<think>" in response and "</think>" in response:
-        content = response.split("<think>")[1].split("</think>")[0].strip()
-        if not content:
-            response = response.replace("<think></think>", "").strip()
-    results.append({"Prompt": prompt, "Response": response})
+# generation_kwargs = {
+#     "max_new_tokens": 1024,
+#     "temperature": 0.7,
+#     "top_p": 0.9,
+#     "do_sample": True,
+#     "repetition_penalty": 1.1,
+# }
 
-# ✅ 保存推理结果
-timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-output_path = f"/data/test-results-{model_info}-{timestamp}.csv"
-pd.DataFrame(results).to_csv(output_path, index=False)
-print(f"[INFO] 推理结果已保存至 {output_path}")
+# results = []
+# for prompt in tqdm(prompts, desc="Generating responses"):
+#     messages = [
+#         {"role": "system", "content": "你是一个编程助手，需要解决用户提出的技术问题。"},
+#         {"role": "user", "content": prompt},
+#     ]
+#     formatted = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+#     inputs = tokenizer(formatted, return_tensors="pt").to(model.device)
+#     input_ids_len = inputs.input_ids.shape[1]
+#     outputs = model.generate(**inputs, **generation_kwargs)
+#     generated_tokens = outputs[0][input_ids_len:]
+#     response = tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
+#     if "<think>" in response and "</think>" in response:
+#         content = response.split("<think>")[1].split("</think>")[0].strip()
+#         if not content:
+#             response = response.replace("<think></think>", "").strip()
+#     results.append({"Prompt": prompt, "Response": response})
 
-artifact = wandb.Artifact(
-    name=f"test_results_{model_info}",
-    type="results",
-    description=f"测试结果 for {model_info} at {timestamp}"
-)
-artifact.add_file(output_path)
-run.log_artifact(artifact)
+# # ✅ 保存推理结果
+# timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+# output_path = f"/data/test-results-{model_info}-{timestamp}.csv"
+# pd.DataFrame(results).to_csv(output_path, index=False)
+# print(f"[INFO] 推理结果已保存至 {output_path}")
+
+# artifact = wandb.Artifact(
+#     name=f"test_results_{model_info}",
+#     type="results",
+#     description=f"测试结果 for {model_info} at {timestamp}"
+# )
+# artifact.add_file(output_path)
+# run.log_artifact(artifact)

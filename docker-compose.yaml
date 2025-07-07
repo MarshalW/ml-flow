@@ -10,6 +10,7 @@ services:
       - ./app:/app
       - ./data:/data
       - ./cache-modelscope:/root/.cache/modelscope
+      - ./ollama:/root/.ollama
       - /etc/localtime:/etc/localtime:ro
     tty: true
     env_file:
