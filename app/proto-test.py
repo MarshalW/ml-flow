@@ -45,41 +45,60 @@ prompts = test_df["Prompt"].tolist()
 # ✅ 设置生成参数（与训练时一致）
 generation_kwargs = {
     "max_new_tokens": 1024,
-    "temperature": 0.7,
+    "temperature": 0.3,
     "top_p": 0.9,
     "do_sample": True,
     "repetition_penalty": 1.1,
+    "top_k": 40,
 }
 
 # ✅ 推理生成回答
 results = []
+system_content = """
+你是专业的 NocoBase 开发助手，深度掌握 NocoBase 框架知识。请严格遵循以下准则：
+1. 专注解答 NocoBase 插件开发、数据模型设计、API 扩展等问题
+2. 对复杂问题提供分步解决方案和代码示例
+3. 拒绝回答与 NocoBase 开发无关的请求
+4. 所有涉及怎么做的响应必须包含可执行的代码片段或具体配置示例
+"""
 for prompt in tqdm(prompts, desc="Generating responses"):
     messages = [
-        {"role": "system", "content": "你是一个编程助手，需要解决用户提出的技术问题。"},
+        {"role": "system", "content": system_content},
         {"role": "user", "content": prompt},
     ]
-    
+
     # 格式化输入
     formatted = tokenizer.apply_chat_template(
-        messages, 
-        tokenize=False, 
+        messages,
+        tokenize=False,
         add_generation_prompt=True
     )
-    
+
     # 生成响应
     inputs = tokenizer(formatted, return_tensors="pt").to(model.device)
-    outputs = model.generate(**inputs, **generation_kwargs)
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    input_ids_len = inputs.input_ids.shape[1]
 
-    # 提取助手回复部分
-    assistant_start = response.find("<|assistant|>")
-    if assistant_start != -1:
-        response = response[assistant_start + len("<|assistant|>"):].strip()
+    outputs = model.generate(**inputs, **generation_kwargs)
+    # response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    generated_tokens = outputs[0][input_ids_len:]  # 截掉 prompt 部分
+    # 解码并清理输出
+    response = tokenizer.decode(
+        generated_tokens, skip_special_tokens=True).strip()
     
-    # 清理多余内容
-    if prompt in response:
-        response = response.split(prompt)[-1].strip()
-    
+    # 去除多余 assistant
+    if response.lower().startswith("assistant"):
+        response = response[len("assistant"):].lstrip("：:").strip()
+
+
+    # # 提取助手回复部分
+    # assistant_start = response.find("<|assistant|>")
+    # if assistant_start != -1:
+    #     response = response[assistant_start + len("<|assistant|>"):].strip()
+
+    # # 清理多余内容
+    # if prompt in response:
+    #     response = response.split(prompt)[-1].strip()
+
     results.append({
         "Prompt": prompt,
         "Response": response,

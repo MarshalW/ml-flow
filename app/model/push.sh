@@ -1,5 +1,7 @@
 #!/bin/bash
 
+MODEL_VERSION=0.2
+
 # Check if ollama is installed
 if ! command -v ollama &> /dev/null
 then
@@ -57,12 +59,12 @@ fi
 LOWERCASE_MODEL_SIZE=$(echo "$MODEL_SIZE" | tr '[:upper:]' '[:lower:]')
 
 # Construct the full model name with lowercase size
-FULL_MODEL_TAG="marshalw/my-nocobase-qwen3-lora-${LOWERCASE_MODEL_SIZE}:0.1"
+FULL_MODEL_TAG="marshalw/my-nocobase-qwen3-lora-${LOWERCASE_MODEL_SIZE}:${MODEL_VERSION}"
 echo "Ollama model tag to be created: $FULL_MODEL_TAG"
 
 # 3. Execute ollama create command
 echo "Creating Ollama model: $FULL_MODEL_TAG ..."
-ollama create "$FULL_MODEL_TAG" -f my-nocobase-model2
+ollama create "$FULL_MODEL_TAG" -f ./mymodel
 
 # Check the exit status of the ollama create command
 if [ $? -eq 0 ]; then
