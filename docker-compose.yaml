@@ -12,15 +12,15 @@ services:
       - ./cache-modelscope:/root/.cache/modelscope
       - ./ollama:/root/.ollama
       - /etc/localtime:/etc/localtime:ro
-    tty: true
     env_file:
       - ./.env
+    tty: true
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: 1
+              count: all
               capabilities: [gpu]
   sing-box:
     build:

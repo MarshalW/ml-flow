@@ -11,16 +11,18 @@ from transformers import (
     TrainingArguments,
 )
 from trl import SFTTrainer
-from tqdm import tqdm
 from datetime import datetime
 import wandb
 import shutil
 
+
+
 checkpoints_dir = "./output-checkpoints"
 
 
+
 # ✅ 数据加载
-dataset_path = "/data/datasets-20250708.csv"
+dataset_path = "/data/datasets-20250710.csv"
 df = pd.read_csv(dataset_path)
 df["think"] = df.get("think", "").fillna("").astype(str)
 
@@ -56,8 +58,6 @@ model, tokenizer = FastLanguageModel.from_pretrained(
 )
 
 # ✅ 格式化数据
-
-
 def formatting_func_clean(examples):
     texts = []
     system_content = """
@@ -69,7 +69,6 @@ def formatting_func_clean(examples):
 """
     for i in range(len(examples["instruction"])):
         messages = [
-            # {"role": "system", "content": "你是一个编程助手，需要解决用户提出的技术问题。"},
             {"role": "system", "content": system_content},
             {"role": "user", "content": examples["instruction"][i]},
         ]
@@ -109,9 +108,9 @@ run = wandb.init(project="lora_nocobase",
                  name=f"test-run-{model_info}-{timestamp}")
 
 # ✅ 超参配置
-batch_size = 10
-grad_accum = 1
-num_epochs = 50
+batch_size = 5
+grad_accum = 3
+num_epochs=50
 learning_rate = 5e-5
 warmup_steps = 0
 

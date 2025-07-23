@@ -4,3 +4,5 @@ nocobase 是什么
 nocobase 主要功能有啥
 nocobase 要用什么语言开发的
 nocobase 怎么基于docker 安装，给出具体步骤和相关配置
+nocobase 有哪些安装方式，分别适合哪种场景
+nocobase 通过 docker 安装方式，使用 mysql 数据库，给出配置步骤和代码
